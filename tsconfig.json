@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@root/*": [
+        "src/*"
+      ],
+      "@pkgs/*": [
+        "packages/*"
+      ],
+    },
+    "outDir": "./dist/",
+    "lib": [
+      "DOM",
+      "ESNext",
+      "DOM.Iterable"
+    ],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    // lint
+    "noEmit": true,
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true
+  },
+  "include": [
+    "./src/**/*",
+    "./scripts/**/*",
+    "./packages/**/*",
+    "./e2e/**/*",
+    "src/core/video-player/player-components/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
