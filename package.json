@@ -6,7 +6,9 @@
   "scripts": {
     "init": "tsx scripts/init-template.ts",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "auto-click": "pnpm --dir src/auto-click start",
+    "auto-click:game": "pnpm --dir src/auto-click start:game"
   },
   "keywords": [],
   "author": "",

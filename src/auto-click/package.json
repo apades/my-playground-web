@@ -1,0 +1,19 @@
+{
+  "name": "auto-click",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts",
+    "start:game": "tsx index.ts --game",
+    "dev": "tsx index.ts"
+  },
+  "dependencies": {
+    "koffi": "^2.12.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
