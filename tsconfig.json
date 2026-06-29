@@ -8,6 +8,9 @@
       "@pkgs/*": [
         "packages/*"
       ],
+      "@style/*": [
+        "style/*"
+      ]
     },
     "outDir": "./dist/",
     "lib": [

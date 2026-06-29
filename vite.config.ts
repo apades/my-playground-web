@@ -81,6 +81,6 @@ export default defineConfig({
   plugins: [indexDirectoryPlugin(), react()],
   root: srcDir,
   server: {
-    port: 5913
-  }
+    port: 5913,
+  },
 })

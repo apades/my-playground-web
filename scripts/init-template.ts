@@ -24,7 +24,9 @@ function assertEmptyDir(dir: string): void {
 }
 
 function buildAppTsx(folderName: string, componentName: string): string {
-  return `export function ${componentName}() {
+  return `import '@style/index.ts'
+
+export function ${componentName}() {
   return (
     <main className="f-center min-h-screen">
       <h1>${folderName}</h1>
@@ -74,7 +76,9 @@ function main(): void {
   const folderName = path.basename(targetDir)
 
   if (!folderName || folderName === '.' || folderName === '..') {
-    console.error('无法解析文件夹名称，请先 cd 到目标空文件夹再执行 pnpm run init')
+    console.error(
+      '无法解析文件夹名称，请先 cd 到目标空文件夹再执行 pnpm run init',
+    )
     process.exit(1)
   }
 
