@@ -85,6 +85,7 @@ function buildDeck(): PokerCard[] {
 }
 
 export const DECK = buildDeck()
+export const DECK_IDS = new Set(DECK.map((card) => card.id))
 
 export function getSuitMeta(suit: Suit) {
   return SUITS.find((s) => s.id === suit)!

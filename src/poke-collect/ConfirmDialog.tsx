@@ -4,6 +4,7 @@ type ConfirmDialogProps = {
   message: string
   confirmText?: string
   cancelText?: string
+  singleButton?: boolean
   onConfirm: () => void
   onCancel: () => void
 }
@@ -14,6 +15,7 @@ export function ConfirmDialog({
   message,
   confirmText = '确认',
   cancelText = '取消',
+  singleButton = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -37,13 +39,15 @@ export function ConfirmDialog({
         </h2>
         <p className="mt-2 text-sm text-black/65">{message}</p>
         <div className="mt-5 flex justify-end gap-2">
-          <button
-            type="button"
-            className="rounded-lg border border-black/15 px-3.5 py-1.5 text-sm text-black/70 hover:bg-black/[0.04]"
-            onClick={onCancel}
-          >
-            {cancelText}
-          </button>
+          {!singleButton && (
+            <button
+              type="button"
+              className="rounded-lg border border-black/15 px-3.5 py-1.5 text-sm text-black/70 hover:bg-black/[0.04]"
+              onClick={onCancel}
+            >
+              {cancelText}
+            </button>
+          )}
           <button
             type="button"
             className="rounded-lg bg-[#1f6b3a] px-3.5 py-1.5 text-sm text-white hover:bg-[#185830]"

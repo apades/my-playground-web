@@ -1,15 +1,19 @@
 import '@style/index.ts'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ConfirmDialog } from './ConfirmDialog'
 import { DECK, SUITS, type PokerCard } from './deck'
+import { downloadExport, readImportFile } from './import-export'
 import { PokerCardView } from './PokerCardView'
 import { loadCollected, saveCollected } from './storage'
 
 export function PokeCollect() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [collected, setCollected] = useState<Set<string>>(() => loadCollected())
   const [pendingUncollect, setPendingUncollect] = useState<PokerCard | null>(
     null,
   )
+  const [pendingImport, setPendingImport] = useState<Set<string> | null>(null)
+  const [importError, setImportError] = useState<string | null>(null)
 
   useEffect(() => {
     saveCollected(collected)
@@ -36,6 +40,30 @@ export function PokeCollect() {
     setPendingUncollect(null)
   }
 
+  function handleExport() {
+    downloadExport(collected)
+  }
+
+  function handleImportClick() {
+    fileInputRef.current?.click()
+  }
+
+  async function handleImportFile(file: File | undefined) {
+    if (!file) return
+    const result = await readImportFile(file)
+    if (!result.ok) {
+      setImportError(result.error)
+      return
+    }
+    setPendingImport(result.ids)
+  }
+
+  function confirmImport() {
+    if (!pendingImport) return
+    setCollected(new Set(pendingImport))
+    setPendingImport(null)
+  }
+
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,#2f6b45_0%,#1a3d28_55%,#12261a_100%)] px-4 py-8 text-[#f4efe4]">
       <div className="mx-auto max-w-5xl">
@@ -51,12 +79,38 @@ export function PokeCollect() {
               点击卡牌标记收集状态，数据保存在本地浏览器
             </p>
           </div>
-          <div className="rounded-lg border border-[#f0d78c]/35 bg-black/20 px-3 py-2 text-sm">
-            已收集{' '}
-            <span className="font-semibold text-[#f0d78c]">
-              {collectedCount}
-            </span>{' '}
-            / {total}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="rounded-lg border border-[#f0d78c]/35 bg-black/20 px-3 py-2 text-sm">
+              已收集{' '}
+              <span className="font-semibold text-[#f0d78c]">
+                {collectedCount}
+              </span>{' '}
+              / {total}
+            </div>
+            <button
+              type="button"
+              className="rounded-lg border border-[#f0d78c]/35 bg-black/20 px-3 py-2 text-sm text-[#f4efe4] hover:bg-black/30"
+              onClick={handleExport}
+            >
+              导出
+            </button>
+            <button
+              type="button"
+              className="rounded-lg border border-[#f0d78c]/35 bg-black/20 px-3 py-2 text-sm text-[#f4efe4] hover:bg-black/30"
+              onClick={handleImportClick}
+            >
+              导入
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                void handleImportFile(e.target.files?.[0])
+                e.target.value = ''
+              }}
+            />
           </div>
         </header>
 
@@ -119,6 +173,29 @@ export function PokeCollect() {
         confirmText="取消收集"
         onConfirm={confirmUncollect}
         onCancel={() => setPendingUncollect(null)}
+      />
+
+      <ConfirmDialog
+        open={pendingImport !== null}
+        title="导入收集记录"
+        message={
+          pendingImport
+            ? `将导入 ${pendingImport.size} 张已收集记录，并覆盖当前 ${collectedCount} 张记录，确认导入？`
+            : ''
+        }
+        confirmText="确认导入"
+        onConfirm={confirmImport}
+        onCancel={() => setPendingImport(null)}
+      />
+
+      <ConfirmDialog
+        open={importError !== null}
+        title="导入失败"
+        message={importError ?? ''}
+        confirmText="知道了"
+        singleButton
+        onConfirm={() => setImportError(null)}
+        onCancel={() => setImportError(null)}
       />
     </main>
   )
