@@ -1,21 +1,45 @@
-import { readdirSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 
 const srcDir = path.resolve(__dirname, 'src')
 const rootIndexHtml = path.join(srcDir, 'index.html')
+const base = process.env.BASE_PATH ?? '/'
+
+function getBuildInputs(): Record<string, string> {
+  const inputs: Record<string, string> = {
+    main: rootIndexHtml,
+  }
+
+  for (const folder of getSrcFolders()) {
+    const htmlPath = path.join(srcDir, folder, 'index.html')
+    if (existsSync(htmlPath)) {
+      inputs[folder] = htmlPath
+    }
+  }
+
+  return inputs
+}
 
 function getSrcFolders(): string[] {
   return readdirSync(srcDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+    .filter(
+      (entry) =>
+        entry.isDirectory() &&
+        !entry.name.startsWith('.') &&
+        entry.name !== 'dist' &&
+        entry.name !== 'node_modules',
+    )
     .map((entry) => entry.name)
     .sort()
 }
 
-function buildIndexHtml(folders: string[]): string {
+function buildIndexHtml(folders: string[], basePath: string): string {
+  const prefix = basePath.endsWith('/') ? basePath : `${basePath}/`
   const links = folders
-    .map((name) => `    <li><a href="/${name}/">${name}</a></li>`)
+    .filter((name) => existsSync(path.join(srcDir, name, 'index.html')))
+    .map((name) => `    <li><a href="${prefix}${name}/">${name}</a></li>`)
     .join('\n')
 
   return `<!doctype html>
@@ -52,7 +76,7 @@ ${links || '    <li>暂无 demo</li>'}
 `
 }
 
-function indexDirectoryPlugin(): Plugin {
+function indexDirectoryPlugin(basePath: string): Plugin {
   return {
     name: 'index-directory',
     transformIndexHtml: {
@@ -61,7 +85,7 @@ function indexDirectoryPlugin(): Plugin {
         if (path.normalize(ctx.filename) !== path.normalize(rootIndexHtml)) {
           return html
         }
-        return buildIndexHtml(getSrcFolders())
+        return buildIndexHtml(getSrcFolders(), basePath)
       },
     },
     configureServer(server) {
@@ -71,17 +95,25 @@ function indexDirectoryPlugin(): Plugin {
           return next()
         }
         res.setHeader('Content-Type', 'text/html; charset=utf-8')
-        res.end(buildIndexHtml(getSrcFolders()))
+        res.end(buildIndexHtml(getSrcFolders(), basePath))
       })
     },
   }
 }
 
 export default defineConfig({
-  plugins: [indexDirectoryPlugin(), react()],
+  base,
+  plugins: [indexDirectoryPlugin(base), react()],
   root: srcDir,
   server: {
     port: 5913,
+  },
+  build: {
+    outDir: '../dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      input: getBuildInputs(),
+    },
   },
   resolve: {
     alias: {

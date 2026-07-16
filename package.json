@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "init": "tsx scripts/init-template.ts",
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build"
   },
   "keywords": [],
   "author": "",
