@@ -83,4 +83,10 @@ export default defineConfig({
   server: {
     port: 5913,
   },
+  resolve: {
+    alias: {
+      '@style': path.resolve(__dirname, 'style'),
+      '@root': path.resolve(__dirname, 'src'),
+    },
+  },
 })
