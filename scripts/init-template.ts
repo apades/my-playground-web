@@ -24,7 +24,7 @@ function assertEmptyDir(dir: string): void {
 }
 
 function buildAppTsx(folderName: string, componentName: string): string {
-  return `import '@style/index.ts'
+  return `import '@style/index'
 
 export function ${componentName}() {
   return (
