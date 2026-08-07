@@ -119,6 +119,7 @@ export default defineConfig({
     alias: {
       '@style': path.resolve(__dirname, 'style'),
       '@root': path.resolve(__dirname, 'src'),
+      '@utils': path.resolve(__dirname, 'utils'),
     },
   },
 })
