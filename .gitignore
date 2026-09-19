@@ -67,3 +67,5 @@ tsup.*.bundled_*.mjs
 vite.client.dev.js
 
 .last-run.json
+
+test.mp4
